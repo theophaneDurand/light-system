@@ -5,21 +5,21 @@
 #endif
 
 // define pins for the red, green and blue LEDs and the neopixel strip
-// #define RED_LED 6
-// #define BLUE_LED 5
-// #define GREEN_LED 9
+#define RED_LED 6
+#define BLUE_LED 5
+#define GREEN_LED 9
 #define NEOPIXEL 11
 
 // define pins for the controls
 #define HUE_PICKER A0
-// #define BRIGHTNESS_PICKER A1
-// #define BLINK_SPEED_PICKER A2
+#define BRIGHTNESS_PICKER A1
+#define BLINK_SPEED_PICKER A2
 
 // Define number of leds of the neopixel strip
 #define NUMPIXELS 60
 
 // overall brightness value
-// int brightness;
+int brightness;
 int hue;
 
 // individual brightness values for the red, green and blue LEDs
@@ -38,13 +38,13 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL, NEO_GRB + NEO_KHZ800);
 void setup()
 {
     // set up pins to output and input.
-    // pinMode(GREEN_LED, OUTPUT);
-    // pinMode(RED_LED, OUTPUT);
-    // pinMode(BLUE_LED, OUTPUT);
+    pinMode(GREEN_LED, OUTPUT);
+    pinMode(RED_LED, OUTPUT);
+    pinMode(BLUE_LED, OUTPUT);
     pinMode(NEOPIXEL, OUTPUT);
     pinMode(HUE_PICKER, INPUT);
-    // pinMode(BRIGHTNESS_PICKER, INPUT);
-    // pinMode(BLINK_SPEED_PICKER, INPUT);
+    pinMode(BRIGHTNESS_PICKER, INPUT);
+    pinMode(BLINK_SPEED_PICKER, INPUT);
 
     // Initialize NeoPixel
     pixels.begin();
@@ -53,26 +53,22 @@ void setup()
 
 void loop()
 {
-    // brightness = analogRead(BRIGHTNESS_PICKER);
-    // brightness = map(brightness, 0, 1023, 0, 1000);
+    brightness = analogRead(BRIGHTNESS_PICKER);
+    brightness = map(brightness, 0, 1023, 0, 100);
 
-    // blink_speed = analogRead(BLINK_SPEED_PICKER);
-    // blink_speed = map(blink_speed, 0, 1023, 0, 1500);
+    blink_speed = analogRead(BLINK_SPEED_PICKER);
+    blink_speed = map(blink_speed, 0, 1023, 0, 1500);
 
     hue = analogRead(HUE_PICKER);
     hue = map(hue, 0, 1023, 0, 360);
+
     color rgb = HSVtoRGB(hue, 100);
-    for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
 
-        // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-        // Here we're using a moderately bright green color:
-        pixels.setPixelColor(i, pixels.Color(rgb.r, rgb.g, rgb.b));
+    on(rgb);
+    delay(blink_speed);
+    off();
+    delay(blink_speed);
 
-
-        // delay(DELAYVAL); // Pause before next pass through loop
-    }
-    pixels.show();   // Send the updated pixel colors to the hardware.
-    //delay(1500);
 }
 
 struct color HSVtoRGB(int H, int S){
@@ -108,4 +104,19 @@ struct color HSVtoRGB(int H, int S){
     rgb.g = G;
     rgb.b = B;
     return rgb;
+}
+
+void on(struct color rgb){
+    for(int i=0; i<NUMPIXELS; i++) {
+        // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
+        pixels.setPixelColor(i, pixels.Color(rgb.r, rgb.g, rgb.b));
+    }
+    pixels.show();   // Send the updated pixel colors to the hardware.
+}
+void off(){
+    color rgb;
+    rgb.r = 0;
+    rgb.g = 0;
+    rgb.b = 0;
+    on(rgb);
 }
