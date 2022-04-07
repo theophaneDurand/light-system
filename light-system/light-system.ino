@@ -30,7 +30,7 @@ struct color {
 };
 
 // overall blink speed
-int blink_speed = 10;
+int blink_speed = 100;
 
 // Setting up Neopixel
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL, NEO_GRB + NEO_KHZ800);
@@ -62,7 +62,7 @@ void loop()
     hue = analogRead(HUE_PICKER);
     hue = map(hue, 0, 1023, 0, 360);
 
-    color rgb = HSVtoRGB(hue, 100);
+    color rgb = HSVtoRGB(hue, brightness);
 
     on(rgb);
     delay(blink_speed);
